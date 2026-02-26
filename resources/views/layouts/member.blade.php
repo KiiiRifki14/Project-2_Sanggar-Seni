@@ -16,7 +16,7 @@
     <aside class="dashboard-sidebar" id="sidebar">
         <div class="sidebar-brand">
             <h4>🎭 Art-Hub</h4>
-            <small>Member Panel</small>
+            <small>Portal Pelanggan</small>
         </div>
         <div class="sidebar-section-label">Menu Utama</div>
         <ul class="sidebar-menu">
