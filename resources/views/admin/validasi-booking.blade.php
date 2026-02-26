@@ -1,3 +1,4 @@
+@use('App\Enums\BookingStatus')
 @extends('layouts.admin')
 @section('title', 'Validasi Booking — Art-Hub')
 @section('page-title', 'Validasi Booking Pementasan')
@@ -33,9 +34,9 @@
                     </td>
                     <td><small>{{ Str::limit($b->lokasi_acara, 50) }}</small></td>
                     <td>{{ $b->durasi_jam }} jam</td>
-                    <td><span class="badge-{{ $b->status }}">{{ ucfirst($b->status) }}</span></td>
+                    <td><span class="badge-{{ $b->status->value }}">{{ $b->status->label() }}</span></td>
                     <td>
-                        @if($b->status === 'menunggu')
+                        @if($b->status === BookingStatus::MENUNGGU)
                         <div class="d-flex gap-1">
                             <form action="{{ route('admin.process-booking', $b->id) }}" method="POST" class="d-inline">
                                 @csrf

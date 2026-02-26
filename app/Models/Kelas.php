@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\LogsActivity;
 
 class Kelas extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, LogsActivity; // ★ Audit Trail
 
     protected $table = 'kelas';
 
@@ -24,7 +25,7 @@ class Kelas extends Model
     protected function casts(): array
     {
         return [
-            'biaya' => 'decimal:2',
+            'biaya'     => 'decimal:2',
             'is_active' => 'boolean',
         ];
     }

@@ -9,13 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('galeris', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary(); // ★ UUID Primary Key
             $table->string('judul');
             $table->text('deskripsi')->nullable();
             $table->string('file_path');
             $table->enum('tipe', ['foto', 'video']);
             $table->boolean('is_published')->default(true);
             $table->timestamps();
+            $table->softDeletes(); // ★ SoftDeletes
         });
     }
 

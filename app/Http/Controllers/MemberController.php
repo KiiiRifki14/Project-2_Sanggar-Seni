@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\Kelas;
 use App\Models\PendaftaranLes;
 use App\Models\ReservasiPentas;
+use App\Enums\PendaftaranStatus;
+use App\Enums\BookingStatus;
 use App\Http\Requests\StorePendaftaranRequest;
 use App\Http\Requests\StoreBookingRequest;
 
@@ -20,7 +22,6 @@ class MemberController extends Controller
         $user = Auth::user();
         $totalLes = $user->pendaftaranLes()->count();
         $totalBooking = $user->reservasiPentas()->count();
-        // ★ Fix #4: Eager Loading
         $lesTerakhir = $user->pendaftaranLes()->with('kelas')->latest()->take(3)->get();
         $bookingTerakhir = $user->reservasiPentas()->latest()->take(3)->get();
 
@@ -37,10 +38,10 @@ class MemberController extends Controller
     public function updateProfil(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'no_whatsapp' => 'required|string|max:20',
-            'alamat' => 'nullable|string',
-            'tempat_lahir' => 'nullable|string|max:100',
+            'name'          => 'required|string|max:255',
+            'no_whatsapp'   => 'required|string|max:20',
+            'alamat'        => 'nullable|string',
+            'tempat_lahir'  => 'nullable|string|max:100',
             'tanggal_lahir' => 'nullable|date',
         ]);
 
@@ -56,14 +57,12 @@ class MemberController extends Controller
         return view('member.daftar-les', compact('kelas'));
     }
 
-    // ★ Fix #3: DB::transaction + lockForUpdate untuk cek kuota
-    // ★ Fix #4: Form Request untuk validasi
+    // ★ DB::transaction + lockForUpdate + PHP Enum
     public function storeLes(StorePendaftaranRequest $request)
     {
         $validated = $request->validated();
 
         return DB::transaction(function () use ($validated) {
-            // Lock kelas row untuk cek kuota (prevent race condition / overbooking)
             $kelas = Kelas::lockForUpdate()->find($validated['kelas_id']);
 
             if (!$kelas || !$kelas->is_active) {
@@ -72,19 +71,17 @@ class MemberController extends Controller
 
             $userId = Auth::id();
 
-            // Cek kuota masih tersedia
             $jumlahSiswa = PendaftaranLes::where('kelas_id', $kelas->id)
-                ->whereIn('status', ['menunggu', 'diterima'])
+                ->whereIn('status', [PendaftaranStatus::MENUNGGU, PendaftaranStatus::DITERIMA])
                 ->count();
 
             if ($jumlahSiswa >= $kelas->kuota) {
                 return back()->with('error', 'Maaf, kuota kelas ini sudah penuh.')->withInput();
             }
 
-            // Cek duplikasi pendaftaran
             $exists = PendaftaranLes::where('user_id', $userId)
                 ->where('kelas_id', $validated['kelas_id'])
-                ->whereIn('status', ['menunggu', 'diterima'])
+                ->whereIn('status', [PendaftaranStatus::MENUNGGU, PendaftaranStatus::DITERIMA])
                 ->exists();
 
             if ($exists) {
@@ -103,17 +100,15 @@ class MemberController extends Controller
         return view('member.booking');
     }
 
-    // ★ Fix #3: DB::transaction + lockForUpdate untuk anti-bentrok
-    // ★ Fix #4: Form Request untuk validasi
+    // ★ DB::transaction + lockForUpdate + PHP Enum
     public function storeBooking(StoreBookingRequest $request)
     {
         $validated = $request->validated();
 
         return DB::transaction(function () use ($validated) {
-            // Anti-bentrok dengan pessimistic locking
             $bentrok = ReservasiPentas::lockForUpdate()
                 ->where('tanggal_pentas', $validated['tanggal_pentas'])
-                ->where('status', 'disetujui')
+                ->where('status', BookingStatus::DISETUJUI)
                 ->where(function ($q) use ($validated) {
                     $q->where('waktu_mulai', '<', $validated['waktu_selesai'])
                         ->where('waktu_selesai', '>', $validated['waktu_mulai']);
@@ -123,7 +118,6 @@ class MemberController extends Controller
                 return back()->with('error', 'Maaf, jadwal tersebut sudah terisi. Silakan pilih tanggal/jam lain.')->withInput();
             }
 
-            // Hitung durasi
             $mulai = \Carbon\Carbon::parse($validated['waktu_mulai']);
             $selesai = \Carbon\Carbon::parse($validated['waktu_selesai']);
             $validated['durasi_jam'] = round($selesai->diffInMinutes($mulai) / 60, 1);
@@ -131,7 +125,6 @@ class MemberController extends Controller
 
             $booking = ReservasiPentas::create($validated);
 
-            // Generate WhatsApp link
             /** @var User $user */
             $user = Auth::user();
             $jenisLabel = ucfirst($validated['jenis_acara']);
@@ -163,15 +156,13 @@ class MemberController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
-        // ★ Fix #4: Eager Loading
         $pendaftaran = $user->pendaftaranLes()->with('kelas')->latest()->get();
         $booking = $user->reservasiPentas()->latest()->get();
 
         return view('member.riwayat', compact('pendaftaran', 'booking'));
     }
 
-    // ★ Fix #2 sudah ada: IDOR protection via where('user_id', auth()->id())
-    public function cetakBukti($id)
+    public function cetakBukti(string $id)
     {
         $pendaftaran = PendaftaranLes::with(['user', 'kelas'])
             ->where('user_id', Auth::id())

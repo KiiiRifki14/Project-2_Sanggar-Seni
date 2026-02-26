@@ -31,8 +31,11 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'tanggal_lahir' => 'date',
+            'password'          => 'hashed',
+            'tanggal_lahir'     => 'date',
+            // ★ Fix #6: Enkripsi PII (data pribadi terenkripsi di database)
+            'no_whatsapp'       => 'encrypted',
+            'alamat'            => 'encrypted',
         ];
     }
 

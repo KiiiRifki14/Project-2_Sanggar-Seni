@@ -148,7 +148,7 @@
             <div class="bukti-row">
                 <div class="bukti-label">Status</div>
                 <div class="bukti-value">
-                    <span class="badge-{{ $pendaftaran->status }}">{{ ucfirst($pendaftaran->status) }}</span>
+                    <span class="badge-{{ $pendaftaran->status->value }}">{{ $pendaftaran->status->label() }}</span>
                 </div>
             </div>
         </div>

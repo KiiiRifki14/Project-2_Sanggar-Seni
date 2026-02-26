@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('reservasi_pentas', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->uuid('id')->primary(); // ★ UUID Primary Key
+            $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
             $table->enum('jenis_acara', ['pernikahan', 'penyambutan', 'festival', 'lainnya']);
             $table->date('tanggal_pentas');
             $table->time('waktu_mulai');
@@ -18,9 +18,10 @@ return new class extends Migration
             $table->decimal('durasi_jam', 4, 1);
             $table->text('lokasi_acara');
             $table->text('deskripsi_acara')->nullable();
-            $table->enum('status', ['menunggu', 'disetujui', 'ditolak'])->default('menunggu');
+            $table->string('status')->default('menunggu'); // ★ String utk Enum cast
             $table->text('catatan_admin')->nullable();
             $table->timestamps();
+            $table->softDeletes(); // ★ SoftDeletes
         });
     }
 

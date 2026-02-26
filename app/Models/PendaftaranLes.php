@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Enums\PendaftaranStatus;
 
 class PendaftaranLes extends Model
 {
-    use SoftDeletes;
+    use HasUuids, SoftDeletes; // ★ UUID + SoftDeletes
 
     protected $table = 'pendaftaran_les';
 
@@ -27,6 +29,7 @@ class PendaftaranLes extends Model
     {
         return [
             'tanggal_lahir' => 'date',
+            'status'        => PendaftaranStatus::class, // ★ Enum Cast
         ];
     }
 

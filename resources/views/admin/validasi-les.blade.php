@@ -1,3 +1,4 @@
+@use('App\Enums\PendaftaranStatus')
 @extends('layouts.admin')
 @section('title', 'Validasi Pendaftaran Les — Art-Hub')
 @section('page-title', 'Validasi Pendaftaran Les')
@@ -38,9 +39,9 @@
                         <br><small class="text-muted">{{ $p->no_hp_ortu }}</small>
                     </td>
                     <td><small>{{ $p->created_at->format('d M Y') }}</small></td>
-                    <td><span class="badge-{{ $p->status }}">{{ ucfirst($p->status) }}</span></td>
+                    <td><span class="badge-{{ $p->status->value }}">{{ $p->status->label() }}</span></td>
                     <td>
-                        @if($p->status === 'menunggu')
+                        @if($p->status === PendaftaranStatus::MENUNGGU)
                         <div class="d-flex gap-1">
                             <form action="{{ route('admin.process-les', $p->id) }}" method="POST" class="d-inline">
                                 @csrf

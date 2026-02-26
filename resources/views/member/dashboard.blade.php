@@ -57,7 +57,7 @@
                     <strong class="d-block small">{{ $les->kelas->nama_kelas }}</strong>
                     <small class="text-muted">{{ $les->created_at->diffForHumans() }}</small>
                 </div>
-                <span class="badge-{{ $les->status }}">{{ ucfirst($les->status) }}</span>
+                <span class="badge-{{ $les->status->value }}">{{ $les->status->label() }}</span>
             </div>
             @endforeach
             @else
@@ -72,7 +72,7 @@
                     <strong class="d-block small">{{ ucfirst($bk->jenis_acara) }} — {{ $bk->tanggal_pentas->format('d M Y') }}</strong>
                     <small class="text-muted">{{ $bk->lokasi_acara }}</small>
                 </div>
-                <span class="badge-{{ $bk->status }}">{{ ucfirst($bk->status) }}</span>
+                <span class="badge-{{ $bk->status->value }}">{{ $bk->status->label() }}</span>
             </div>
             @endforeach
             @endif

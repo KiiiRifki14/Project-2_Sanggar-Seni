@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('kelas', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('nama_kelas');
             $table->enum('kategori', ['tari', 'musik', 'teater']);
             $table->text('deskripsi');
@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('kuota')->default(20);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

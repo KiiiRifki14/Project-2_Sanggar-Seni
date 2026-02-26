@@ -1,3 +1,4 @@
+@use('App\Enums\PendaftaranStatus')
 @extends('layouts.member')
 @section('title', 'Riwayat — Art-Hub')
 @section('page-title', 'Riwayat Aktivitas')
@@ -29,10 +30,10 @@
                         <br><small class="text-muted">{{ ucfirst($p->kelas->kategori) }}</small>
                     </td>
                     <td>{{ $p->created_at->format('d M Y') }}</td>
-                    <td><span class="badge-{{ $p->status }}">{{ ucfirst($p->status) }}</span></td>
+                    <td><span class="badge-{{ $p->status->value }}">{{ $p->status->label() }}</span></td>
                     <td><small class="text-muted">{{ $p->catatan_admin ?? '-' }}</small></td>
                     <td>
-                        @if($p->status === 'diterima')
+                        @if($p->status === PendaftaranStatus::DITERIMA)
                         <a href="{{ route('member.cetak-bukti', $p->id) }}" class="btn btn-sm btn-burgundy" target="_blank">
                             <i class="bi bi-printer me-1"></i> Cetak
                         </a>
@@ -76,7 +77,7 @@
                     <td>{{ $b->tanggal_pentas->format('d M Y') }}</td>
                     <td>{{ $b->waktu_mulai }} — {{ $b->waktu_selesai }}</td>
                     <td><small>{{ Str::limit($b->lokasi_acara, 40) }}</small></td>
-                    <td><span class="badge-{{ $b->status }}">{{ ucfirst($b->status) }}</span></td>
+                    <td><span class="badge-{{ $b->status->value }}">{{ $b->status->label() }}</span></td>
                     <td><small class="text-muted">{{ $b->catatan_admin ?? '-' }}</small></td>
                 </tr>
                 @endforeach

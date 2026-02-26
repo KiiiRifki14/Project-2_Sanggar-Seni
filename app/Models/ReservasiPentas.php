@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Enums\BookingStatus;
+use App\Traits\LogsActivity;
 
 class ReservasiPentas extends Model
 {
-    use SoftDeletes;
+    use HasUuids, SoftDeletes, LogsActivity; // ★ UUID + SoftDeletes + Audit Trail
+
 
     protected $table = 'reservasi_pentas';
 
@@ -28,7 +32,8 @@ class ReservasiPentas extends Model
     {
         return [
             'tanggal_pentas' => 'date',
-            'durasi_jam' => 'decimal:1',
+            'durasi_jam'     => 'decimal:1',
+            'status'         => BookingStatus::class, // ★ Enum Cast
         ];
     }
 

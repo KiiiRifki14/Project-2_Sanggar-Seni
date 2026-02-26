@@ -9,18 +9,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role', ['admin', 'member'])->default('member');
-            $table->string('no_whatsapp', 20)->nullable();
+            $table->text('no_whatsapp')->nullable();
             $table->text('alamat')->nullable();
             $table->string('tempat_lahir', 100)->nullable();
             $table->date('tanggal_lahir')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

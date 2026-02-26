@@ -9,17 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pendaftaran_les', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('kelas_id')->constrained('kelas')->onDelete('cascade');
+            $table->uuid('id')->primary(); // ★ UUID Primary Key
+            $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
+            $table->foreignUuid('kelas_id')->constrained('kelas')->onDelete('cascade');
             $table->string('tempat_lahir');
             $table->date('tanggal_lahir');
             $table->string('asal_sekolah');
             $table->string('nama_orang_tua');
             $table->string('no_hp_ortu', 20);
-            $table->enum('status', ['menunggu', 'diterima', 'ditolak'])->default('menunggu');
+            $table->string('status')->default('menunggu'); // ★ String utk Enum cast
             $table->text('catatan_admin')->nullable();
             $table->timestamps();
+            $table->softDeletes(); // ★ SoftDeletes
         });
     }
 
