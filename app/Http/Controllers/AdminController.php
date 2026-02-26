@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Kelas;
 use App\Models\PendaftaranLes;
 use App\Models\ReservasiPentas;
 use App\Models\Galeri;
+use App\Http\Requests\StoreGaleriRequest;
 
 class AdminController extends Controller
 {
@@ -71,22 +74,34 @@ class AdminController extends Controller
             'catatan_admin' => 'nullable|string',
         ]);
 
-        // Cek bentrok jika menyetujui
+        // ★ Fix #3: DB Transaction + lockForUpdate untuk cek bentrok
         if ($validated['status'] === 'disetujui') {
-            $bentrok = ReservasiPentas::where('id', '!=', $id)
-                ->where('tanggal_pentas', $booking->tanggal_pentas)
-                ->where('status', 'disetujui')
-                ->where(function ($q) use ($booking) {
-                    $q->where('waktu_mulai', '<', $booking->waktu_selesai)
-                        ->where('waktu_selesai', '>', $booking->waktu_mulai);
-                })->exists();
+            $result = DB::transaction(function () use ($booking, $validated, $id) {
+                // Re-fetch with lock to prevent race condition
+                $locked = ReservasiPentas::lockForUpdate()->find($id);
 
-            if ($bentrok) {
+                $bentrok = ReservasiPentas::where('id', '!=', $id)
+                    ->where('tanggal_pentas', $locked->tanggal_pentas)
+                    ->where('status', 'disetujui')
+                    ->where(function ($q) use ($locked) {
+                        $q->where('waktu_mulai', '<', $locked->waktu_selesai)
+                            ->where('waktu_selesai', '>', $locked->waktu_mulai);
+                    })->exists();
+
+                if ($bentrok) {
+                    return 'bentrok';
+                }
+
+                $locked->update($validated);
+                return 'ok';
+            });
+
+            if ($result === 'bentrok') {
                 return back()->with('error', 'Tidak bisa menyetujui — jadwal bentrok dengan booking lain yang sudah disetujui.');
             }
+        } else {
+            $booking->update($validated);
         }
-
-        $booking->update($validated);
 
         $label = $validated['status'] === 'disetujui' ? 'disetujui' : 'ditolak';
         return back()->with('success', "Booking berhasil {$label}.");
@@ -99,24 +114,19 @@ class AdminController extends Controller
         return view('admin.galeri', compact('galeri'));
     }
 
-    public function storeGaleri(Request $request)
+    // ★ Fix #1 & #3: Storage Facade + Form Request + MIME validation
+    public function storeGaleri(StoreGaleriRequest $request)
     {
-        $validated = $request->validate([
-            'judul' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'file' => 'required|file|mimes:jpg,jpeg,png,gif,mp4,webm|max:20480',
-            'tipe' => 'required|in:foto,video',
-        ]);
+        $validated = $request->validated();
 
-        $file = $request->file('file');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $file->move(public_path('uploads/galeri'), $filename);
+        // Simpan file menggunakan Storage Facade (lebih aman dari move())
+        $path = $request->file('file')->store('galeri', 'public');
 
         Galeri::create([
-            'judul' => $validated['judul'],
+            'judul'     => $validated['judul'],
             'deskripsi' => $validated['deskripsi'],
-            'file_path' => 'uploads/galeri/' . $filename,
-            'tipe' => $validated['tipe'],
+            'file_path' => 'storage/' . $path,
+            'tipe'      => $validated['tipe'],
         ]);
 
         return back()->with('success', 'Konten galeri berhasil ditambahkan!');
@@ -125,10 +135,13 @@ class AdminController extends Controller
     public function deleteGaleri($id)
     {
         $galeri = Galeri::findOrFail($id);
-        $path = public_path($galeri->file_path);
-        if (file_exists($path)) {
-            unlink($path);
+
+        // Hapus file dari Storage
+        $storagePath = str_replace('storage/', '', $galeri->file_path);
+        if (Storage::disk('public')->exists($storagePath)) {
+            Storage::disk('public')->delete($storagePath);
         }
+
         $galeri->delete();
         return back()->with('success', 'Item galeri berhasil dihapus.');
     }
@@ -145,7 +158,7 @@ class AdminController extends Controller
     public function deleteSiswa($id)
     {
         $pendaftaran = PendaftaranLes::findOrFail($id);
-        $pendaftaran->delete();
+        $pendaftaran->delete(); // ★ SoftDelete — data masuk recycle bin
         return back()->with('success', 'Data siswa berhasil dihapus.');
     }
 
@@ -169,9 +182,10 @@ class AdminController extends Controller
     // ── Laporan ──
     public function laporan(Request $request)
     {
-        $bulan = $request->get('bulan', date('m'));
-        $tahun = $request->get('tahun', date('Y'));
+        $bulan = $request->input('bulan', date('m'));
+        $tahun = $request->input('tahun', date('Y'));
 
+        // ★ Fix #4: Eager Loading untuk performa query
         $siswaAktif = PendaftaranLes::with(['user', 'kelas'])
             ->where('status', 'diterima')
             ->whereYear('created_at', $tahun)
@@ -201,8 +215,8 @@ class AdminController extends Controller
 
     public function exportLaporan(Request $request)
     {
-        $bulan = $request->get('bulan', date('m'));
-        $tahun = $request->get('tahun', date('Y'));
+        $bulan = $request->input('bulan', date('m'));
+        $tahun = $request->input('tahun', date('Y'));
 
         $siswaAktif = PendaftaranLes::with(['user', 'kelas'])
             ->where('status', 'diterima')
