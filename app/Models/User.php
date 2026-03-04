@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -9,7 +10,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasUuids, HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -33,13 +34,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
             'tanggal_lahir'     => 'date',
-            // ★ Fix #6: Enkripsi PII (data pribadi terenkripsi di database)
-            'no_whatsapp'       => 'encrypted',
-            'alamat'            => 'encrypted',
         ];
     }
 
     public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isManajer(): bool
     {
         return $this->role === 'admin';
     }
@@ -49,13 +52,13 @@ class User extends Authenticatable
         return $this->role === 'member';
     }
 
-    public function pendaftaranLes()
+    public function isPersonel(): bool
     {
-        return $this->hasMany(PendaftaranLes::class);
+        return $this->role === 'member';
     }
 
-    public function reservasiPentas()
+    public function roleName(): string
     {
-        return $this->hasMany(ReservasiPentas::class);
+        return $this->role === 'admin' ? 'Manajer Sanggar' : 'Personel';
     }
 }

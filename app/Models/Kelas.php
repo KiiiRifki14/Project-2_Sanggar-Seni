@@ -4,39 +4,41 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use App\Traits\LogsActivity;
 
 class Kelas extends Model
 {
-    use SoftDeletes, LogsActivity; // ★ Audit Trail
+    use HasUuids, SoftDeletes, LogsActivity;
 
     protected $table = 'kelas';
 
     protected $fillable = [
-        'nama_kelas',
+        'nama_tarian',
         'kategori',
         'deskripsi',
-        'jadwal',
-        'biaya',
-        'kuota',
-        'is_active',
+        'filosofi_gerakan',
+        'sejarah_singkat',
+        'link_video_referensi',
+        'tingkat_kesulitan',
+        'foto_path',
+        'is_published',
     ];
 
     protected function casts(): array
     {
         return [
-            'biaya'     => 'decimal:2',
-            'is_active' => 'boolean',
+            'is_published' => 'boolean',
         ];
     }
 
-    public function pendaftaran()
+    public function labelKesulitan(): string
     {
-        return $this->hasMany(PendaftaranLes::class);
-    }
-
-    public function siswaAktif()
-    {
-        return $this->hasMany(PendaftaranLes::class)->where('status', 'diterima');
+        return match ($this->tingkat_kesulitan) {
+            'mudah'    => '🟢 Mudah',
+            'menengah' => '🟡 Menengah',
+            'sulit'    => '🔴 Sulit',
+            default    => $this->tingkat_kesulitan,
+        };
     }
 }

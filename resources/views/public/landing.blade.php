@@ -8,13 +8,13 @@
         <div class="row align-items-center">
             <div class="col-lg-7 animate-fade-up">
                 <span class="hero-badge">🎭 Sanggar Seni Terbaik</span>
-                <h1 class="hero-title">Lestarikan Budaya,<br>Ciptakan Karya Seni</h1>
+                <h1 class="hero-title">Lestarikan Budaya,<br>Arsipkan Warisan Seni</h1>
                 <p class="hero-subtitle">
-                    Art-Hub adalah pusat pendidikan dan pementasan seni tradisional. Kami membuka kelas tari, musik, dan teater untuk semua usia, serta melayani jasa pementasan profesional untuk acara Anda.
+                    Art-Hub adalah repositori digital seni budaya tradisional. Jelajahi ensiklopedia tarian, arsip kostum bersejarah, dan dokumentasi pementasan dari masa ke masa.
                 </p>
                 <div class="d-flex gap-3 flex-wrap">
                     <a href="{{ route('katalog') }}" class="btn-gold">
-                        <i class="bi bi-book"></i> Lihat Kelas Kami
+                        <i class="bi bi-book"></i> Jelajahi Katalog
                     </a>
                     <a href="{{ route('register') }}" class="btn-outline-gold">
                         <i class="bi bi-person-plus"></i> Daftar Sekarang
@@ -94,32 +94,32 @@
 <section class="py-5">
     <div class="container py-4">
         <div class="text-center">
-            <h2 class="section-title">Layanan Kami</h2>
+            <h2 class="section-title">Repositori Digital</h2>
             <div class="section-divider"></div>
-            <p class="section-subtitle">Berbagai layanan seni berkualitas untuk Anda</p>
+            <p class="section-subtitle">Eksplorasi kekayaan budaya Nusantara secara digital</p>
         </div>
         <div class="row g-4">
             <div class="col-md-4 animate-fade-up delay-1">
                 <div class="service-card">
-                    <div class="service-icon"><i class="bi bi-music-note-list"></i></div>
-                    <h5 class="fw-bold mb-3">Kelas Seni</h5>
-                    <p class="text-muted small">Belajar tari, musik, dan teater tradisional bersama pengajar berpengalaman. Jadwal fleksibel, kelas kecil & privat.</p>
-                    <a href="{{ route('katalog') }}" class="btn btn-sm btn-burgundy mt-2">Lihat Kelas <i class="bi bi-arrow-right"></i></a>
+                    <div class="service-icon"><i class="bi bi-book"></i></div>
+                    <h5 class="fw-bold mb-3">Katalog Tarian</h5>
+                    <p class="text-muted small">Ensiklopedia lengkap tarian tradisional lengkap dengan sejarah, filosofi gerakan, dan video referensi.</p>
+                    <a href="{{ route('katalog') }}" class="btn btn-sm btn-burgundy mt-2">Jelajahi <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>
             <div class="col-md-4 animate-fade-up delay-2">
                 <div class="service-card">
-                    <div class="service-icon"><i class="bi bi-calendar-heart"></i></div>
-                    <h5 class="fw-bold mb-3">Sewa Panggung</h5>
-                    <p class="text-muted small">Butuh pementasan untuk pernikahan, festival, atau acara resmi? Pesan jasa sanggar kami dengan mudah & cepat.</p>
-                    <a href="{{ route('register') }}" class="btn btn-sm btn-burgundy mt-2">Pesan Sekarang <i class="bi bi-arrow-right"></i></a>
+                    <div class="service-icon"><i class="bi bi-palette"></i></div>
+                    <h5 class="fw-bold mb-3">Arsip Kostum</h5>
+                    <p class="text-muted small">Katalog detail kostum dan alat musik tradisional. Makna warna, ornamen, dan kondisi fisik terdata lengkap.</p>
+                    <a href="{{ route('register') }}" class="btn btn-sm btn-burgundy mt-2">Lihat Arsip <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>
             <div class="col-md-4 animate-fade-up delay-3">
                 <div class="service-card">
-                    <div class="service-icon"><i class="bi bi-camera-reels"></i></div>
-                    <h5 class="fw-bold mb-3">Galeri Portofolio</h5>
-                    <p class="text-muted small">Lihat dokumentasi pementasan kami. Foto & video terbaik dari berbagai acara hajatan dan festival seni budaya.</p>
+                    <div class="service-icon"><i class="bi bi-camera-video"></i></div>
+                    <h5 class="fw-bold mb-3">Dokumentasi</h5>
+                    <p class="text-muted small">Arsip video dan foto pementasan masa lalu. Dikelompokkan berdasarkan jenis acara dan tahun.</p>
                     <a href="{{ route('galeri') }}" class="btn btn-sm btn-burgundy mt-2">Lihat Galeri <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>
@@ -128,29 +128,29 @@
 </section>
 
 {{-- ══ KELAS PREVIEW ══ --}}
-@if($kelas->count() > 0)
+@if($tarian->count() > 0)
 <section class="py-5" style="background: linear-gradient(135deg, var(--burgundy-900), var(--burgundy-700));">
     <div class="container py-4">
         <div class="text-center text-white">
-            <h2 style="font-family:var(--font-heading);font-weight:700;">Kelas yang Tersedia</h2>
+            <h2 style="font-family:var(--font-heading);font-weight:700;">Koleksi Tarian Kami</h2>
             <div class="section-divider" style="background:linear-gradient(90deg, var(--gold-400), var(--gold-300));"></div>
-            <p style="color:rgba(255,255,255,0.7);">Pilih kelas sesuai minat dan bakat Anda</p>
+            <p style="color:rgba(255,255,255,0.7);">Jelajahi kekayaan seni tradisional yang telah kami arsipkan</p>
         </div>
         <div class="row g-4 mt-2">
-            @foreach($kelas as $k)
+            @foreach($tarian as $t)
             <div class="col-md-6 col-lg-4 animate-fade-up delay-{{ $loop->iteration }}">
                 <div class="kelas-card">
                     <div class="kelas-header">
-                        <span class="kelas-badge {{ $k->kategori }}">{{ ucfirst($k->kategori) }}</span>
-                        <h5 class="mt-2 mb-0 fw-bold">{{ $k->nama_kelas }}</h5>
+                        <span class="kelas-badge {{ $t->kategori }}">{{ ucfirst($t->kategori) }}</span>
+                        <h5 class="mt-2 mb-0 fw-bold">{{ $t->nama_tarian }}</h5>
                     </div>
                     <div class="kelas-body">
-                        <p class="text-muted small flex-grow-1">{{ Str::limit($k->deskripsi, 100) }}</p>
+                        <p class="text-muted small flex-grow-1">{{ Str::limit($t->deskripsi, 100) }}</p>
                         <div class="d-flex align-items-center justify-content-between mt-3">
-                            <div>
-                                <div class="kelas-price">Rp {{ number_format($k->biaya, 0, ',', '.') }} <small>/bulan</small></div>
-                            </div>
-                            <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ $k->jadwal }}</small>
+                            <span class="badge bg-secondary">{{ $t->labelKesulitan() }}</span>
+                            @if($t->link_video_referensi)
+                            <a href="{{ $t->link_video_referensi }}" target="_blank" class="btn btn-sm btn-outline-light"><i class="bi bi-play-circle me-1"></i>Video</a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -158,7 +158,7 @@
             @endforeach
         </div>
         <div class="text-center mt-4">
-            <a href="{{ route('katalog') }}" class="btn-gold"><i class="bi bi-grid"></i> Lihat Semua Kelas</a>
+            <a href="{{ route('katalog') }}" class="btn-gold"><i class="bi bi-grid"></i> Lihat Semua Koleksi</a>
         </div>
     </div>
 </section>

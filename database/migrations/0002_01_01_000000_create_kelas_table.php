@@ -10,13 +10,15 @@ return new class extends Migration
     {
         Schema::create('kelas', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('nama_kelas');
+            $table->string('nama_tarian');
             $table->enum('kategori', ['tari', 'musik', 'teater']);
             $table->text('deskripsi');
-            $table->string('jadwal');
-            $table->decimal('biaya', 12, 2);
-            $table->integer('kuota')->default(20);
-            $table->boolean('is_active')->default(true);
+            $table->text('filosofi_gerakan')->nullable();
+            $table->text('sejarah_singkat')->nullable();
+            $table->string('link_video_referensi')->nullable();
+            $table->enum('tingkat_kesulitan', ['mudah', 'menengah', 'sulit'])->default('menengah');
+            $table->string('foto_path')->nullable();
+            $table->boolean('is_published')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

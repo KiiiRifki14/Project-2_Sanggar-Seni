@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Admin Dashboard — Art-Hub')</title>
+    <title>@yield('title', 'Manajer Dashboard — Art-Hub 2.0')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
@@ -15,27 +15,29 @@
     {{-- ══ SIDEBAR ══ --}}
     <aside class="dashboard-sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <h4>🎭 Art-Hub</h4>
-            <small>Admin Panel</small>
+            <h4>🎭 Art-Hub 2.0</h4>
+            <small>Manajer Panel</small>
         </div>
         <div class="sidebar-section-label">Utama</div>
         <ul class="sidebar-menu">
             <li><a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
         </ul>
-        <div class="sidebar-section-label">Validasi</div>
+        <div class="sidebar-section-label">Manajemen Event</div>
         <ul class="sidebar-menu">
-            <li><a href="{{ route('admin.validasi-les') }}" class="{{ request()->routeIs('admin.validasi-les') ? 'active' : '' }}"><i class="bi bi-clipboard-check"></i> Validasi Les</a></li>
-            <li><a href="{{ route('admin.validasi-booking') }}" class="{{ request()->routeIs('admin.validasi-booking') ? 'active' : '' }}"><i class="bi bi-calendar-check"></i> Validasi Booking</a></li>
+            <li><a href="{{ route('admin.kelola-event') }}" class="{{ request()->routeIs('admin.kelola-event') ? 'active' : '' }}"><i class="bi bi-calendar-event"></i> Kelola Event</a></li>
+            <li><a href="{{ route('admin.jadwal') }}" class="{{ request()->routeIs('admin.jadwal') ? 'active' : '' }}"><i class="bi bi-clock-history"></i> Jadwal Multi-Track</a></li>
+            <li><a href="{{ route('admin.absensi') }}" class="{{ request()->routeIs('admin.absensi') ? 'active' : '' }}"><i class="bi bi-person-check"></i> Absensi Latihan</a></li>
         </ul>
-        <div class="sidebar-section-label">Kelola</div>
+        <div class="sidebar-section-label">Personel & Logistik</div>
         <ul class="sidebar-menu">
-            <li><a href="{{ route('admin.galeri') }}" class="{{ request()->routeIs('admin.galeri') ? 'active' : '' }}"><i class="bi bi-images"></i> Galeri</a></li>
-            <li><a href="{{ route('admin.siswa') }}" class="{{ request()->routeIs('admin.siswa') ? 'active' : '' }}"><i class="bi bi-people"></i> Data Siswa</a></li>
-            <li><a href="{{ route('admin.jadwal') }}" class="{{ request()->routeIs('admin.jadwal') ? 'active' : '' }}"><i class="bi bi-calendar3"></i> Jadwal Pentas</a></li>
+            <li><a href="{{ route('admin.kelola-personel') }}" class="{{ request()->routeIs('admin.kelola-personel') ? 'active' : '' }}"><i class="bi bi-people"></i> Kelola Personel</a></li>
+            <li><a href="{{ route('admin.kelola-vendor') }}" class="{{ request()->routeIs('admin.kelola-vendor') ? 'active' : '' }}"><i class="bi bi-shop"></i> Kelola Vendor</a></li>
+            <li><a href="{{ route('admin.sewa-kostum') }}" class="{{ request()->routeIs('admin.sewa-kostum') ? 'active' : '' }}"><i class="bi bi-bag-check"></i> Sewa Kostum</a></li>
         </ul>
-        <div class="sidebar-section-label">Laporan</div>
+        <div class="sidebar-section-label">Keuangan</div>
         <ul class="sidebar-menu">
-            <li><a href="{{ route('admin.laporan') }}" class="{{ request()->routeIs('admin.laporan') ? 'active' : '' }}"><i class="bi bi-file-earmark-bar-graph"></i> Laporan & Rekap</a></li>
+            <li><a href="{{ route('admin.negosiasi') }}" class="{{ request()->routeIs('admin.negosiasi') ? 'active' : '' }}"><i class="bi bi-chat-left-text"></i> Negosiasi</a></li>
+            <li><a href="{{ route('admin.keuangan') }}" class="{{ request()->routeIs('admin.keuangan') ? 'active' : '' }}"><i class="bi bi-calculator"></i> Kalkulator Laba</a></li>
         </ul>
         <div class="sidebar-section-label">Lainnya</div>
         <ul class="sidebar-menu">
@@ -58,10 +60,10 @@
                 <button class="btn btn-sm d-lg-none" onclick="document.getElementById('sidebar').classList.toggle('show')">
                     <i class="bi bi-list fs-4"></i>
                 </button>
-                <h5>@yield('page-title', 'Admin Dashboard')</h5>
+                <h5>@yield('page-title', 'Dashboard Manajer')</h5>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-danger rounded-pill" id="notif-badge" style="display:none;"></span>
+                <span class="badge bg-success rounded-pill">Manajer</span>
                 <span class="text-muted small"><i class="bi bi-shield-check me-1"></i> {{ auth()->user()->name }}</span>
             </div>
         </div>

@@ -1,136 +1,112 @@
 @extends('layouts.admin')
-@section('title', 'Admin Dashboard — Art-Hub')
-@section('page-title', 'Dashboard Admin')
+@section('title', 'Dashboard Manajer — Art-Hub 2.0')
+@section('page-title', 'Dashboard Manajer')
 
 @section('content')
 {{-- Stats Cards --}}
-<div class="row g-4 mb-4">
-    <div class="col-md-4 col-lg animate-fade-up delay-1">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:linear-gradient(135deg,#FFF3CD,#FFEEBA);color:#856404;">
-                <i class="bi bi-clipboard-check"></i>
-            </div>
-            <div class="stat-number">{{ $pendaftaranBaru }}</div>
-            <div class="stat-label">Pendaftar Les Baru</div>
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card card-arthub text-center p-3">
+            <div class="fs-2 mb-1">📅</div>
+            <h3 class="mb-0">{{ $totalEvent }}</h3>
+            <small class="text-muted">Total Event</small>
         </div>
     </div>
-    <div class="col-md-4 col-lg animate-fade-up delay-2">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:linear-gradient(135deg,#D6EAF8,#AED6F1);color:#2980B9;">
-                <i class="bi bi-calendar-event"></i>
-            </div>
-            <div class="stat-number">{{ $bookingBaru }}</div>
-            <div class="stat-label">Booking Menunggu</div>
+    <div class="col-6 col-lg-3">
+        <div class="card card-arthub text-center p-3">
+            <div class="fs-2 mb-1">🔵</div>
+            <h3 class="mb-0">{{ $eventAktif }}</h3>
+            <small class="text-muted">Event Aktif</small>
         </div>
     </div>
-    <div class="col-md-4 col-lg animate-fade-up delay-3">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:linear-gradient(135deg,#D4EDDA,#C3E6CB);color:#155724;">
-                <i class="bi bi-people-fill"></i>
-            </div>
-            <div class="stat-number">{{ $totalSiswa }}</div>
-            <div class="stat-label">Siswa Aktif</div>
+    <div class="col-6 col-lg-3">
+        <div class="card card-arthub text-center p-3">
+            <div class="fs-2 mb-1">👥</div>
+            <h3 class="mb-0">{{ $totalPersonel }}</h3>
+            <small class="text-muted">Personel Aktif</small>
         </div>
     </div>
-    <div class="col-md-4 col-lg animate-fade-up delay-4">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:linear-gradient(135deg,#F8D7DA,#F5C6CB);color:#721C24;">
-                <i class="bi bi-person-lines-fill"></i>
-            </div>
-            <div class="stat-number">{{ $totalMember }}</div>
-            <div class="stat-label">Total Member</div>
-        </div>
-    </div>
-    <div class="col-md-4 col-lg animate-fade-up delay-5">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:linear-gradient(135deg,#E8DAEF,#D2B4DE);color:#6C3483;">
-                <i class="bi bi-images"></i>
-            </div>
-            <div class="stat-number">{{ $totalGaleri }}</div>
-            <div class="stat-label">Item Galeri</div>
+    <div class="col-6 col-lg-3">
+        <div class="card card-arthub text-center p-3">
+            <div class="fs-2 mb-1">💰</div>
+            <h3 class="mb-0">Rp {{ number_format($totalLaba, 0, ',', '.') }}</h3>
+            <small class="text-muted">Total Laba Bersih</small>
         </div>
     </div>
 </div>
 
 <div class="row g-4">
-    {{-- Pendaftaran Menunggu --}}
-    <div class="col-lg-6 animate-fade-up delay-2">
-        <div class="glass-card p-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold mb-0" style="color:var(--burgundy-700);">
-                    <i class="bi bi-clipboard-check me-2"></i>Pendaftaran Les Terbaru
-                </h6>
-                @if($pendaftaranBaru > 0)
-                <span class="badge bg-warning text-dark rounded-pill">{{ $pendaftaranBaru }} baru</span>
-                @endif
-            </div>
-            @forelse($pendaftaranTerbaru as $p)
-            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
-                <div>
-                    <strong class="d-block small">{{ $p->user->name }}</strong>
-                    <small class="text-muted">{{ $p->kelas->nama_kelas }} &middot; {{ $p->created_at->diffForHumans() }}</small>
+    {{-- Upcoming Events --}}
+    <div class="col-lg-6">
+        <div class="card card-arthub">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3"><i class="bi bi-calendar-event me-1"></i> Event Mendatang</h6>
+                @forelse($upcomingEvents as $ev)
+                <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <div>
+                        <strong>{{ $ev->nama_event }}</strong>
+                        <br><small class="text-muted">{{ $ev->tanggal_event->translatedFormat('d M Y') }} • {{ $ev->klien }}</small>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-{{ $ev->status === 'persiapan' ? 'warning' : 'primary' }}">
+                            {{ ucfirst($ev->status) }}
+                        </span>
+                        <br><small>{!! $ev->labelBayar() !!}</small>
+                    </div>
                 </div>
-                <span class="badge-menunggu">Menunggu</span>
+                @empty
+                <p class="text-muted mb-0">Belum ada event mendatang.</p>
+                @endforelse
             </div>
-            @empty
-            <p class="text-muted small mb-0">Tidak ada pendaftaran menunggu.</p>
-            @endforelse
-            <a href="{{ route('admin.validasi-les') }}" class="btn btn-sm btn-burgundy w-100 mt-2">Kelola Semua</a>
         </div>
     </div>
 
-    {{-- Booking Menunggu --}}
-    <div class="col-lg-6 animate-fade-up delay-3">
-        <div class="glass-card p-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold mb-0" style="color:var(--burgundy-700);">
-                    <i class="bi bi-calendar-event me-2"></i>Booking Pentas Terbaru
-                </h6>
-                @if($bookingBaru > 0)
-                <span class="badge bg-info text-dark rounded-pill">{{ $bookingBaru }} baru</span>
-                @endif
-            </div>
-            @forelse($bookingTerbaru as $b)
-            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
-                <div>
-                    <strong class="d-block small">{{ ucfirst($b->jenis_acara) }} — {{ $b->user->name }}</strong>
-                    <small class="text-muted">{{ $b->tanggal_pentas->format('d M Y') }} &middot; {{ $b->lokasi_acara }}</small>
+    {{-- Notifications --}}
+    <div class="col-lg-6">
+        {{-- Merge Point Alerts --}}
+        @if($mergePoints->isNotEmpty())
+        <div class="card card-arthub border-warning mb-3">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3 text-warning"><i class="bi bi-exclamation-triangle me-1"></i> Latihan Gabung Mendatang</h6>
+                @foreach($mergePoints as $mp)
+                <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <div>
+                        <strong>🤝 {{ $mp->judul }}</strong>
+                        <br><small class="text-muted">{{ $mp->event->nama_event }}</small>
+                    </div>
+                    <span class="badge bg-warning text-dark">{{ $mp->tanggal->translatedFormat('d M Y') }}</span>
                 </div>
-                <span class="badge-menunggu">Menunggu</span>
+                @endforeach
             </div>
-            @empty
-            <p class="text-muted small mb-0">Tidak ada booking menunggu.</p>
-            @endforelse
-            <a href="{{ route('admin.validasi-booking') }}" class="btn btn-sm btn-gold w-100 mt-2">Kelola Semua</a>
         </div>
-    </div>
-</div>
+        @endif
 
-{{-- Quick Links --}}
-<div class="row g-3 mt-3">
-    <div class="col-md-3 animate-fade-up delay-3">
-        <a href="{{ route('admin.galeri') }}" class="d-block glass-card p-3 text-center text-decoration-none" style="color:var(--burgundy-700);">
-            <i class="bi bi-images fs-3 d-block mb-1" style="color:var(--gold-500);"></i>
-            <small class="fw-bold">Kelola Galeri</small>
-        </a>
-    </div>
-    <div class="col-md-3 animate-fade-up delay-4">
-        <a href="{{ route('admin.siswa') }}" class="d-block glass-card p-3 text-center text-decoration-none" style="color:var(--burgundy-700);">
-            <i class="bi bi-people fs-3 d-block mb-1" style="color:var(--gold-500);"></i>
-            <small class="fw-bold">Data Siswa</small>
-        </a>
-    </div>
-    <div class="col-md-3 animate-fade-up delay-5">
-        <a href="{{ route('admin.jadwal') }}" class="d-block glass-card p-3 text-center text-decoration-none" style="color:var(--burgundy-700);">
-            <i class="bi bi-calendar3 fs-3 d-block mb-1" style="color:var(--gold-500);"></i>
-            <small class="fw-bold">Jadwal Pentas</small>
-        </a>
-    </div>
-    <div class="col-md-3 animate-fade-up delay-5">
-        <a href="{{ route('admin.laporan') }}" class="d-block glass-card p-3 text-center text-decoration-none" style="color:var(--burgundy-700);">
-            <i class="bi bi-file-earmark-bar-graph fs-3 d-block mb-1" style="color:var(--gold-500);"></i>
-            <small class="fw-bold">Laporan & Rekap</small>
-        </a>
+        {{-- Costume Return Deadlines --}}
+        @if($deadlineKostum->isNotEmpty())
+        <div class="card card-arthub border-danger">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3 text-danger"><i class="bi bi-alarm me-1"></i> Deadline Pengembalian Kostum</h6>
+                @foreach($deadlineKostum as $dk)
+                <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <div>
+                        <strong>{{ $dk->nama_kostum }}</strong>
+                        <br><small class="text-muted">{{ $dk->vendor->nama_vendor }} • {{ $dk->event->nama_event }}</small>
+                    </div>
+                    <span class="badge bg-danger">{{ $dk->tanggal_kembali->translatedFormat('d M Y') }}</span>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        @if($mergePoints->isEmpty() && $deadlineKostum->isEmpty())
+        <div class="card card-arthub">
+            <div class="card-body text-center py-4">
+                <i class="bi bi-check-circle fs-1 text-success"></i>
+                <p class="mt-2 mb-0 text-muted">Tidak ada notifikasi mendesak saat ini.</p>
+            </div>
+        </div>
+        @endif
     </div>
 </div>
 @endsection
